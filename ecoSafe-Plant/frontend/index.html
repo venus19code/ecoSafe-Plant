@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSafe Plant - Iniciar Sesión</title>
+    <!-- Estilos -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1b4332">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <!-- Insignia Ecológica -->
+            <div class="brand-badge">
+                🌱 EcoSafe Plant
+            </div>
+
+            <h1 class="auth-title">Bienvenido</h1>
+            <p class="auth-subtitle">Gestión Ambiental y Seguridad Laboral en Planta</p>
+
+            <!-- Alerta de Error/Éxito -->
+            <div id="loginAlert" class="alert alert-danger" role="alert"></div>
+
+            <!-- Formulario de Login -->
+            <form id="loginForm" autocomplete="on">
+                <div class="form-group">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="ejemplo@ecosafe.com" 
+                        required 
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="••••••••" 
+                            required
+                        >
+                        <button type="button" id="togglePassword" class="btn-toggle-pwd">Mostrar</button>
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn-primary">
+                    <span>Iniciar Sesión</span>
+                </button>
+            </form>
+
+            <!-- Credenciales de Prueba Rápida -->
+            <div class="demo-box">
+                <div class="demo-box-title">
+                    <span>👤 Cuentas de Demostración:</span>
+                    <small style="color: var(--text-muted); font-weight: normal;">(Clic para autocompletar)</small>
+                </div>
+                <button type="button" class="demo-account-btn" onclick="fillDemo('admin@ecosafe.com', 'Admin123*')">
+                    👑 <strong>Admin:</strong> admin@ecosafe.com | <em>Admin123*</em>
+                </button>
+                <button type="button" class="demo-account-btn" onclick="fillDemo('supervisor@ecosafe.com', 'Supervisor123*')">
+                    📋 <strong>Supervisor:</strong> supervisor@ecosafe.com | <em>Supervisor123*</em>
+                </button>
+                <button type="button" class="demo-account-btn" onclick="fillDemo('operario@ecosafe.com', 'Operario123*')">
+                    👷 <strong>Operario:</strong> operario@ecosafe.com | <em>Operario123*</em>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+</html>
