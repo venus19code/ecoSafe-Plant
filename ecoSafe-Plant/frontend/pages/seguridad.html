@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSafe Plant - Seguridad y Salud en el Trabajo (Spec 004)</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1b4332">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-logo">🌱 EcoSafe Plant</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/pages/dashboard.html" class="nav-item">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/pages/residuos.html" class="nav-item">
+                    <span>🗑️</span>
+                    <span>Residuos (002)</span>
+                </a>
+                <a href="/pages/recursos.html" class="nav-item">
+                    <span>💧</span>
+                    <span>Agua y Energía (003)</span>
+                </a>
+                <a href="/pages/seguridad.html" class="nav-item active">
+                    <span>🦺</span>
+                    <span>Seguridad SST (004)</span>
+                </a>
+                <a href="/pages/epp.html" class="nav-item">
+                    <span>🧤</span>
+                    <span>Dotación EPP (005)</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <small style="opacity: 0.7;">EcoSafe Plant v1.0<br>Módulo SST Activo</small>
+            </div>
+        </aside>
+
+        <!-- Contenedor Principal -->
+        <div class="main-wrapper">
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="menu-toggle-btn" id="menuToggle" aria-label="Abrir menú">☰</button>
+                    <div>
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary);">Seguridad y Salud en el Trabajo (SST)</h2>
+                        <small style="color: var(--text-muted); font-size: 0.775rem;">Matriz IPVR, prevención de riesgos y reporte ágil de condiciones inseguras</small>
+                    </div>
+                </div>
+
+                <!-- Perfil y Cierre de Sesión -->
+                <div class="user-profile">
+                    <div>
+                        <strong id="userName" style="display: block; font-size: 0.9rem;">Cargando...</strong>
+                        <div style="display: flex; gap: 0.4rem; align-items: center; margin-top: 2px;">
+                            <span id="userRole" class="user-badge-role">OPERARIO</span>
+                            <small id="userArea" style="color: var(--text-muted); font-size: 0.775rem;"></small>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="btn-logout" title="Cerrar Sesión">
+                        Salir 🚪
+                    </button>
+                </div>
+            </header>
+
+            <!-- Área de Contenido -->
+            <main class="content-area">
+                <!-- Alerta global de notificaciones -->
+                <div id="globalAlert" class="alert" style="margin-bottom: 1.25rem;"></div>
+
+                <!-- Tarjetas de KPIs de SST -->
+                <section class="kpi-grid">
+                    <!-- KPI 1: Días sin Accidentes -->
+                    <div class="kpi-card kpi-success">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Días sin Accidentes</span>
+                            <span class="kpi-icon">🛡️</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiDaysWithoutAccidents" style="color: var(--accent);">142</span>
+                            <span class="kpi-unit">días</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>Planta de producción segura</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Incidentes Abiertos -->
+                    <div class="kpi-card kpi-danger" id="kpiCardOpenIncidents">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Incidentes Abiertos</span>
+                            <span class="kpi-icon">⚠️</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiOpenIncidents">0</span>
+                            <span class="kpi-unit">en trámite</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span id="kpiPendingText">0 pendientes, 0 en atención</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Peligros Críticos y Altos -->
+                    <div class="kpi-card kpi-warning">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Peligros Críticos/Altos</span>
+                            <span class="kpi-icon">🔥</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiCriticalHazards">0</span>
+                            <span class="kpi-unit">en matriz</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>Requieren controles prioritarios</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: Tasa de Resolución -->
+                    <div class="kpi-card kpi-primary">
+                        <div class="kpi-header">
+                            <span class="kpi-title">% Eficacia de Cierre</span>
+                            <span class="kpi-icon">✅</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiResolutionRate">100%</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span id="kpiResolvedCount">0 resueltos</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestañas de Navegación del Módulo -->
+                <nav class="tab-navigation">
+                    <button class="tab-btn active" id="tabHazardsBtn" data-view="hazards">
+                        📋 Matriz de Peligros (IPVR)
+                    </button>
+                    <button class="tab-btn" id="tabIncidentsBtn" data-view="incidents">
+                        🚨 Reportes de Incidentes y Condiciones (<span id="tabIncidentBadge">0</span>)
+                    </button>
+                </nav>
+
+                <!-- ==========================================
+                     VISTA 1: MATRIZ DE PELIGROS (IPVR)
+                     ========================================== -->
+                <div id="viewHazards">
+                    <section class="toolbar-card">
+                        <div class="toolbar-filters">
+                            <div class="search-box">
+                                <input type="text" id="searchHazardInput" placeholder="Buscar por peligro, actividad o área..." autocomplete="off">
+                            </div>
+
+                            <select id="selectHazardArea" class="filter-select">
+                                <option value="">Todas las Áreas</option>
+                                <option value="Despulpado">Despulpado y Fermentación</option>
+                                <option value="Beneficio">Beneficio Húmedo</option>
+                                <option value="Secado">Nave de Maquinaria y Secado</option>
+                                <option value="Empaque">Línea de Selección y Empaque</option>
+                                <option value="Bodega">Bodega y Almacén General</option>
+                            </select>
+
+                            <select id="selectRiskLevel" class="filter-select">
+                                <option value="">Todos los Niveles</option>
+                                <option value="CRITICO">🔴 Crítico</option>
+                                <option value="ALTO">🟠 Alto</option>
+                                <option value="MEDIO">🟡 Medio</option>
+                                <option value="BAJO">🟢 Bajo</option>
+                            </select>
+                        </div>
+
+                        <div class="toolbar-buttons">
+                            <button id="btnExportHazardsCsv" class="btn-secondary" title="Exportar Matriz IPVR a CSV">
+                                📥 Exportar Matriz
+                            </button>
+                            <button id="btnOpenHazardModal" class="btn-sm-action">
+                                ➕ Registrar Peligro
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Tabla de Matriz IPVR -->
+                    <section class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="hazardsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Riesgo</th>
+                                        <th>Área y Actividad</th>
+                                        <th>Tipo y Descripción del Peligro</th>
+                                        <th>Consecuencias en Salud</th>
+                                        <th>Controles Existentes</th>
+                                        <th>Acciones Recomendadas</th>
+                                        <th style="text-align: right;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hazardsTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            Cargando matriz de peligros...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ==========================================
+                     VISTA 2: REPORTES DE INCIDENTES
+                     ========================================== -->
+                <div id="viewIncidents" style="display: none;">
+                    <section class="toolbar-card">
+                        <div class="toolbar-filters">
+                            <div class="search-box">
+                                <input type="text" id="searchIncidentInput" placeholder="Buscar por lugar, descripción o persona..." autocomplete="off">
+                            </div>
+
+                            <select id="selectIncidentStatus" class="filter-select">
+                                <option value="">Todos los Estados</option>
+                                <option value="PENDIENTE">🔴 Pendientes</option>
+                                <option value="EN_ATENCION">🔵 En Atención</option>
+                                <option value="RESUELTO">🟢 Resueltos</option>
+                                <option value="DESESTIMADO">⚪ Desestimados</option>
+                            </select>
+
+                            <select id="selectIncidentSeverity" class="filter-select">
+                                <option value="">Todas las Severidades</option>
+                                <option value="ALTA">Alta</option>
+                                <option value="MEDIA">Media</option>
+                                <option value="BAJA">Baja</option>
+                            </select>
+                        </div>
+
+                        <div class="toolbar-buttons">
+                            <button id="btnOpenIncidentModal" class="btn-sm-action" style="background-color: var(--danger);">
+                                🚨 Reportar Condición Insegura
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Feed de Incidentes -->
+                    <section id="incidentsFeed">
+                        <div id="incidentsListContainer">
+                            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                Cargando reportes de incidentes...
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal 1: Registrar o Editar Peligro en la Matriz -->
+    <div class="modal-overlay" id="hazardModal" role="dialog" aria-modal="true" aria-labelledby="hazardModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="hazardModalTitle">Registrar Peligro en Matriz IPVR</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseHazardModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="hazardForm">
+                <div class="modal-body">
+                    <div id="hazardModalAlert" class="alert"></div>
+                    <input type="hidden" id="hazardId" value="">
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="hazardArea">Área / Proceso *</label>
+                            <input type="text" id="hazardArea" class="form-input" placeholder="Ej: Despulpado y Fermentación" list="sstAreasList" required>
+                            <datalist id="sstAreasList">
+                                <option value="Despulpado y Fermentación">
+                                <option value="Beneficio húmedo">
+                                <option value="Nave de Maquinaria y Secado">
+                                <option value="Línea de Selección y Empaque">
+                                <option value="Bodega y Almacén General">
+                                <option value="Mantenimiento Mecánico">
+                            </datalist>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="hazardType">Clasificación del Peligro *</label>
+                            <select id="hazardType" class="form-input" required>
+                                <option value="">-- Seleccionar clasificación --</option>
+                                <option value="Mecánico / Atrapamiento">⚙️ Mecánico (Atrapamientos / Partes móviles)</option>
+                                <option value="Locativo / Superficies resbaladizas">🏢 Locativo (Caídas / Pisos húmedos)</option>
+                                <option value="Físico / Ruido industrial">🔊 Físico (Ruido continuo / Vibración)</option>
+                                <option value="Físico / Calor y Temperatura">🌡️ Físico (Estrés térmico / Calderas)</option>
+                                <option value="Químico / Polvos orgánicos">🧪 Químico (Polvos / Gases / Sanitizantes)</option>
+                                <option value="Biomecánico / Cargas">🏋️ Biomecánico (Levantamiento de cargas)</option>
+                                <option value="Biológico / Hongos">🦠 Biológico (Esporas / Picaduras)</option>
+                                <option value="Eléctrico / Alta tensión">⚡ Eléctrico (Contactos directos / Tableros)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="hazardActivity">Actividad o Tarea Específica *</label>
+                        <input type="text" id="hazardActivity" class="form-input" placeholder="Ej: Operación y limpieza de despulpadora de cilindro" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="hazardDescription">Descripción del Peligro Identificado *</label>
+                        <textarea id="hazardDescription" class="form-input" rows="2" placeholder="Detalle cómo se presenta el riesgo y bajo qué condiciones..." required></textarea>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="hazardRiskLevel">Nivel de Riesgo Evaluado *</label>
+                            <select id="hazardRiskLevel" class="form-input" required>
+                                <option value="CRITICO">🔴 CRÍTICO (Intervención urgente obligatoria)</option>
+                                <option value="ALTO">🟠 ALTO (Controles a corto plazo)</option>
+                                <option value="MEDIO" selected>🟡 MEDIO (Riesgo tolerable con control)</option>
+                                <option value="BAJO">🟢 BAJO (Mantener medidas actuales)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="hazardStatus">Estado del Peligro *</label>
+                            <select id="hazardStatus" class="form-input" required>
+                                <option value="ACTIVO">Activo (En gestión)</option>
+                                <option value="CONTROLADO">Controlado (Medidas efectivas)</option>
+                                <option value="EN_REVISION">En Revisión periódica</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="hazardConsequences">Posibles Consecuencias en la Salud</label>
+                        <input type="text" id="hazardConsequences" class="form-input" placeholder="Ej: Amputaciones, fracturas, hipoacusia, lumbalgias...">
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="hazardControls">Controles Existentes</label>
+                            <textarea id="hazardControls" class="form-input" rows="2" placeholder="Guarda de protección, señalización, EPP en uso..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="hazardRecommended">Acciones Recomendadas</label>
+                            <textarea id="hazardRecommended" class="form-input" rows="2" placeholder="Instalar sensor inductivo, capacitación postural..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelHazardModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveHazard">Guardar Peligro</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Reporte Rápido de Incidente / Condición Insegura (Mobile-First) -->
+    <div class="modal-overlay" id="incidentModal" role="dialog" aria-modal="true" aria-labelledby="incidentModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header" style="background-color: #fee2e2; border-bottom-color: #fca5a5;">
+                <h3 class="modal-title" id="incidentModalTitle" style="color: #991b1b;">🚨 Reportar Condición Insegura o Incidente</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseIncidentModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="incidentForm">
+                <div class="modal-body">
+                    <div id="incidentModalAlert" class="alert"></div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="incidentType">Tipo de Reporte *</label>
+                        <select id="incidentType" class="form-input" required>
+                            <option value="CONDICION_INSEGURA">⚠️ Condición Insegura (Falla locativa, máquina averiada, derrame)</option>
+                            <option value="ACTO_INSEGURO">👤 Acto Inseguro (Omisión de protocolo, no uso de EPP)</option>
+                            <option value="CASI_ACCIDENTE">⚡ Casi Accidente (Evento que casi ocasiona lesión)</option>
+                            <option value="ACCIDENTE_LEVE">🩹 Accidente Leve (Primeros auxilios sin incapacidad)</option>
+                            <option value="ACCIDENTE_GRAVE">🚑 Accidente Grave (Remisión médica inmediata)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="incidentLocation">Lugar Exacto en Planta *</label>
+                        <input type="text" id="incidentLocation" class="form-input" placeholder="Ej: Pasillo 2 de fermentación, tolva 3 de empaque..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="incidentDescription">Descripción del Hecho o Peligro *</label>
+                        <textarea id="incidentDescription" class="form-input" rows="3" placeholder="Explica claramente lo que viste o lo que ocurrió para que el supervisor pueda actuar de inmediato..." required></textarea>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="incidentSeverity">Nivel de Urgencia / Severidad *</label>
+                            <select id="incidentSeverity" class="form-input" required>
+                                <option value="ALTA">🔴 Alta (Riesgo inminente de accidente grave)</option>
+                                <option value="MEDIA" selected>🟡 Media (Requiere atención en el turno)</option>
+                                <option value="BAJA">🟢 Baja (Mejora preventiva programable)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="incidentDate">Fecha y Hora</label>
+                            <input type="datetime-local" id="incidentDate" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelIncidentModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" style="background-color: var(--danger);" id="btnSaveIncident">
+                        Enviar Reporte Inmediato
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Atender / Resolver Incidente (Supervisor / Admin) -->
+    <div class="modal-overlay" id="resolveModal" role="dialog" aria-modal="true" aria-labelledby="resolveModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="resolveModalTitle">Gestionar Incidente #<span id="resolveIncidentIdText"></span></h3>
+                <button type="button" class="modal-close-btn" id="btnCloseResolveModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="resolveForm">
+                <div class="modal-body">
+                    <div id="resolveModalAlert" class="alert"></div>
+                    <input type="hidden" id="resolveIncidentId" value="">
+
+                    <div style="background-color: #f8fafc; border: 1px solid var(--border); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+                        <small style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Detalle Reportado:</small>
+                        <div id="resolveIncidentDescription" style="font-size: 0.875rem; margin-top: 0.25rem; font-weight: 600;"></div>
+                        <div id="resolveIncidentMeta" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="resolveStatusSelect">Actualizar Estado *</label>
+                        <select id="resolveStatusSelect" class="form-input" required>
+                            <option value="EN_ATENCION">🔵 En Atención (Inspección o reparación en curso)</option>
+                            <option value="RESUELTO">🟢 Resuelto (Acción correctiva ejecutada y verificada)</option>
+                            <option value="DESESTIMADO">⚪ Desestimado (No aplica o falsa alarma)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="resolveNotes">Notas de la Acción Correctiva / Cierre *</label>
+                        <textarea id="resolveNotes" class="form-input" rows="3" placeholder="Describe qué medidas se implementaron para corregir la condición de peligro..." required></textarea>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelResolveModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveResolve">Guardar Gestión</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/seguridad.js"></script>
+</body>
+</html>

@@ -782,3 +782,446 @@ body {
     }
 }
 
+/* ==========================================================
+   COMPONENTES PARA MÓDULO DE RECURSOS (SPEC 003)
+   ========================================================== */
+
+/* Navegación por pestañas (Agua / Energía) */
+.tab-navigation {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+    background-color: rgba(45, 106, 79, 0.04);
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-btn.tab-water.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.tab-btn.tab-energy.active {
+    color: #d97706;
+    border-bottom-color: #d97706;
+}
+
+/* Barra de progreso de metas ambientales */
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background-color: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.4s ease, background-color 0.3s;
+}
+
+.progress-success { background-color: var(--success); }
+.progress-warning { background-color: var(--warning); }
+.progress-danger { background-color: var(--danger); }
+
+/* Badges de Recurso */
+.badge-water {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-energy {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.calc-box {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+    color: #166534;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ==========================================================
+   COMPONENTES PARA SEGURIDAD LABORAL SST (SPEC 004)
+   ========================================================== */
+
+/* Badges de Niveles de Riesgo IPVR */
+.risk-badge {
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.risk-bajo {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.risk-medio {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.risk-alto {
+    background-color: #ffedd5;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.risk-critico {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    animation: pulseRisk 2s infinite ease-in-out;
+}
+
+@keyframes pulseRisk {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Badges de Estado de Incidentes */
+.status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+}
+
+.status-pendiente {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.status-en-atencion {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.status-resuelto {
+    background-color: #d1fae5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+.status-desestimado {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+
+/* Tarjeta de incidente */
+.incident-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.incident-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.incident-card.severity-ALTA {
+    border-left: 5px solid var(--danger);
+}
+
+.incident-card.severity-MEDIA {
+    border-left: 5px solid var(--warning);
+}
+
+.incident-card.severity-BAJA {
+    border-left: 5px solid var(--info);
+}
+
+.incident-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.incident-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+/* ==========================================================
+   COMPONENTES PARA DOTACIÓN Y CONTROL DE EPP (SPEC 005)
+   ========================================================== */
+
+/* Banner de alerta de dotaciones vencidas */
+.epp-alert-banner {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1.5px solid #fca5a5;
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    animation: alertPulse 3s infinite ease-in-out;
+}
+
+@keyframes alertPulse {
+    0%, 100% { border-color: #fca5a5; }
+    50% { border-color: #ef4444; }
+}
+
+.epp-alert-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.epp-alert-icon {
+    font-size: 1.75rem;
+}
+
+/* Badges de Categorías de EPP */
+.badge-epp-category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.badge-epp-cabeza { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.badge-epp-visual { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+.badge-epp-auditiva { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+.badge-epp-respiratoria { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+.badge-epp-manos { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.badge-epp-pies { background-color: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+.badge-epp-cuerpo { background-color: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+
+/* Badges de Estado de Renovación */
+.badge-renewal-expired {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-renewal-due-soon {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-renewal-ok {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+
+
+
+
+/* ==========================================================
+   COMPONENTES PARA DASHBOARD EJECUTIVO (SPEC 006)
+   ========================================================== */
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+}
+
+.chart-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    max-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Reglas de Impresión y Exportación a PDF (Criterio Spec 006) */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt !important;
+    }
+
+    .sidebar,
+    .topbar,
+    .toolbar-card,
+    .btn-logout,
+    .btn-primary,
+    .btn-secondary,
+    .btn-close-modal,
+    .modal-overlay,
+    .menu-toggle-btn {
+        display: none !important;
+    }
+
+    .main-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .content-area {
+        padding: 0 !important;
+    }
+
+    .app-layout {
+        display: block !important;
+    }
+
+    .card, .chart-card, .kpi-card {
+        box-shadow: none !important;
+        border: 1px solid #cccccc !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
+    }
+}

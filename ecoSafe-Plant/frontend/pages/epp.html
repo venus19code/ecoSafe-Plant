@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSafe Plant - Elementos de Protección Personal (Spec 005)</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1b4332">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-logo">🌱 EcoSafe Plant</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/pages/dashboard.html" class="nav-item">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/pages/residuos.html" class="nav-item">
+                    <span>🗑️</span>
+                    <span>Residuos (002)</span>
+                </a>
+                <a href="/pages/recursos.html" class="nav-item">
+                    <span>💧</span>
+                    <span>Agua y Energía (003)</span>
+                </a>
+                <a href="/pages/seguridad.html" class="nav-item">
+                    <span>🦺</span>
+                    <span>Seguridad SST (004)</span>
+                </a>
+                <a href="/pages/epp.html" class="nav-item active">
+                    <span>🧤</span>
+                    <span>Dotación EPP (005)</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <small style="opacity: 0.7;">EcoSafe Plant v1.0<br>Módulo EPP Activo</small>
+            </div>
+        </aside>
+
+        <!-- Contenedor Principal -->
+        <div class="main-wrapper">
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="menu-toggle-btn" id="menuToggle" aria-label="Abrir menú">☰</button>
+                    <div>
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary);">Control de Dotación y Elementos de Protección Personal (EPP)</h2>
+                        <small style="color: var(--text-muted); font-size: 0.775rem;">Asignación de dotaciones, control de vigencias e inspecciones en planta</small>
+                    </div>
+                </div>
+
+                <!-- Perfil y Cierre de Sesión -->
+                <div class="user-profile">
+                    <div>
+                        <strong id="userName" style="display: block; font-size: 0.9rem;">Cargando...</strong>
+                        <div style="display: flex; gap: 0.4rem; align-items: center; margin-top: 2px;">
+                            <span id="userRole" class="user-badge-role">OPERARIO</span>
+                            <small id="userArea" style="color: var(--text-muted); font-size: 0.775rem;"></small>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="btn-logout" title="Cerrar Sesión">
+                        Salir 🚪
+                    </button>
+                </div>
+            </header>
+
+            <!-- Área de Contenido -->
+            <main class="content-area">
+                <!-- Alerta global de notificaciones -->
+                <div id="globalAlert" class="alert" style="margin-bottom: 1.25rem;"></div>
+
+                <!-- Banner de Alerta para Dotaciones Vencidas -->
+                <section class="epp-alert-banner" id="eppAlertBanner" style="display: none;">
+                    <div class="epp-alert-content">
+                        <span class="epp-alert-icon">⚠️</span>
+                        <div>
+                            <strong style="color: #991b1b; font-size: 0.95rem; display: block;">¡Atención! Dotaciones Vencidas que Requieren Reposición</strong>
+                            <span style="font-size: 0.85rem; color: #7f1d1d;" id="eppAlertBannerText">
+                                Se identificaron dotaciones con vida útil expirada en el personal de planta.
+                            </span>
+                        </div>
+                    </div>
+                    <button id="btnViewRenewalsFromBanner" class="btn-sm-action" style="background-color: var(--danger); white-space: nowrap;">
+                        Ver Dotaciones a Reponer &rarr;
+                    </button>
+                </section>
+
+                <!-- Tarjetas de KPIs de EPP -->
+                <section class="kpi-grid">
+                    <!-- KPI 1: Vencidos -->
+                    <div class="kpi-card kpi-danger" id="kpiCardExpired">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Dotaciones Vencidas</span>
+                            <span class="kpi-icon">⏳</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiExpiredCount" style="color: var(--danger);">0</span>
+                            <span class="kpi-unit">a reponer</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>Vida útil cumplida</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Próximas a Vencer (<30 días) -->
+                    <div class="kpi-card kpi-warning">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Por Vencer (&lt;30 días)</span>
+                            <span class="kpi-icon">📅</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiDueSoonCount" style="color: var(--warning);">0</span>
+                            <span class="kpi-unit">próximas</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>Programar compra o recambio</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Entregas del Mes -->
+                    <div class="kpi-card kpi-primary">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Entregas este Mes</span>
+                            <span class="kpi-icon">📦</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiMonthDeliveries">0</span>
+                            <span class="kpi-unit">asignaciones</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span id="kpiTotalDeliveriesText">Total histórico: 0</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: Cumplimiento en Inspecciones -->
+                    <div class="kpi-card kpi-success">
+                        <div class="kpi-header">
+                            <span class="kpi-title">% Cumplimiento Rondas</span>
+                            <span class="kpi-icon">🛡️</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiComplianceRate" style="color: var(--accent);">100%</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span id="kpiTotalInspectionsText">En 0 inspecciones en planta</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestañas de Navegación del Módulo -->
+                <nav class="tab-navigation">
+                    <button class="tab-btn active" id="tabDeliveriesBtn" data-view="deliveries">
+                        📦 Historial de Entregas
+                    </button>
+                    <button class="tab-btn" id="tabRenewalsBtn" data-view="renewals">
+                        ⚠️ Alertas de Reposición (<span id="tabRenewalsBadge">0</span>)
+                    </button>
+                    <button class="tab-btn" id="tabCatalogBtn" data-view="catalog">
+                        🦺 Catálogo de EPP y Stock
+                    </button>
+                    <button class="tab-btn" id="tabInspectionsBtn" data-view="inspections">
+                        🔍 Rondas de Inspección
+                    </button>
+                </nav>
+
+                <!-- ==========================================
+                     VISTA 1: HISTORIAL DE ENTREGAS
+                     ========================================== -->
+                <div id="viewDeliveries">
+                    <section class="toolbar-card">
+                        <div class="toolbar-filters">
+                            <div class="search-box">
+                                <input type="text" id="searchDeliveriesInput" placeholder="Buscar por colaborador, EPP o área..." autocomplete="off">
+                            </div>
+
+                            <select id="selectDeliveryCategory" class="filter-select">
+                                <option value="">Todas las Categorías</option>
+                                <option value="CABEZA">Cabeza (Cascos)</option>
+                                <option value="VISUAL">Visual (Gafas/Caretas)</option>
+                                <option value="AUDITIVA">Auditiva (Protectores)</option>
+                                <option value="RESPIRATORIA">Respiratoria (Mascarillas)</option>
+                                <option value="MANOS">Manos (Guantes)</option>
+                                <option value="PIES">Pies (Botas)</option>
+                                <option value="CUERPO">Cuerpo (Delantales/Peto)</option>
+                            </select>
+
+                            <select id="selectDeliveryReason" class="filter-select">
+                                <option value="">Todos los Motivos</option>
+                                <option value="DOTACION_PERIODICA">Dotación Periódica</option>
+                                <option value="INGRESO_NUEVO">Nuevo Ingreso</option>
+                                <option value="DETERIORO">Por Deterioro</option>
+                                <option value="PERDIDA">Por Pérdida</option>
+                            </select>
+                        </div>
+
+                        <div class="toolbar-buttons">
+                            <button id="btnExportDeliveriesCsv" class="btn-secondary" title="Exportar Entregas a CSV">
+                                📥 Exportar CSV
+                            </button>
+                            <button id="btnOpenDeliveryModal" class="btn-sm-action">
+                                ➕ Asignar Dotación
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="deliveriesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Entrega</th>
+                                        <th>Colaborador</th>
+                                        <th>Área</th>
+                                        <th>EPP Asignado</th>
+                                        <th>Categoría</th>
+                                        <th>Próxima Renovación</th>
+                                        <th>Estado Vigencia</th>
+                                        <th>Entregado Por</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="deliveriesTableBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            Cargando entregas de dotación...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ==========================================
+                     VISTA 2: ALERTAS DE REPOSICIÓN
+                     ========================================== -->
+                <div id="viewRenewals" style="display: none;">
+                    <section class="table-card">
+                        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); background-color: #f8fafc;">
+                            <h3 style="font-size: 1rem; font-weight: 700; color: var(--primary);">
+                                ⚠️ Dotaciones con Vida Útil Expirada o Próximas a Vencer (&lt; 30 días)
+                            </h3>
+                            <small style="color: var(--text-muted);">
+                                Garantice el suministro oportuno para evitar incidentes o sanciones en auditorías de SST.
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table" id="renewalsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Estado</th>
+                                        <th>Colaborador</th>
+                                        <th>Área</th>
+                                        <th>EPP a Reponer</th>
+                                        <th>Fecha Última Entrega</th>
+                                        <th>Fecha Límite Renovación</th>
+                                        <th>Tiempo Restante</th>
+                                        <th>Stock en Bodega</th>
+                                        <th style="text-align: right;">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="renewalsTableBody">
+                                    <tr>
+                                        <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            Cargando alertas de renovación...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ==========================================
+                     VISTA 3: CATÁLOGO DE EPP Y STOCK
+                     ========================================== -->
+                <div id="viewCatalog" style="display: none;">
+                    <section class="toolbar-card">
+                        <div class="toolbar-filters">
+                            <div class="search-box">
+                                <input type="text" id="searchCatalogInput" placeholder="Buscar en catálogo de EPP..." autocomplete="off">
+                            </div>
+
+                            <select id="selectCatalogCategory" class="filter-select">
+                                <option value="">Todas las Categorías</option>
+                                <option value="CABEZA">Cabeza</option>
+                                <option value="VISUAL">Visual</option>
+                                <option value="AUDITIVA">Auditiva</option>
+                                <option value="RESPIRATORIA">Respiratoria</option>
+                                <option value="MANOS">Manos</option>
+                                <option value="PIES">Pies</option>
+                                <option value="CUERPO">Cuerpo</option>
+                            </select>
+                        </div>
+
+                        <div class="toolbar-buttons">
+                            <button id="btnOpenCatalogModal" class="btn-sm-action">
+                                ➕ Nuevo EPP en Catálogo
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="catalogTable">
+                                <thead>
+                                    <tr>
+                                        <th>Categoría</th>
+                                        <th>Nombre del EPP</th>
+                                        <th>Norma Técnica</th>
+                                        <th>Vida Útil Estimada</th>
+                                        <th>Stock Disponible</th>
+                                        <th>Descripción / Características</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="catalogTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            Cargando catálogo de EPP...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ==========================================
+                     VISTA 4: RONDAS DE INSPECCIÓN
+                     ========================================== -->
+                <div id="viewInspections" style="display: none;">
+                    <section class="toolbar-card">
+                        <div class="toolbar-filters">
+                            <div class="search-box">
+                                <input type="text" id="searchInspectionsInput" placeholder="Buscar por colaborador o área..." autocomplete="off">
+                            </div>
+
+                            <select id="selectInspectionCompliance" class="filter-select">
+                                <option value="">Todos los Resultados</option>
+                                <option value="true">🟢 Conforme (Uso correcto)</option>
+                                <option value="false">🔴 No Conforme (Sin EPP / Deterioro)</option>
+                            </select>
+                        </div>
+
+                        <div class="toolbar-buttons">
+                            <button id="btnOpenInspectionModal" class="btn-sm-action">
+                                🔍 Registrar Ronda de Inspección
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="inspectionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Colaborador Inspeccionado</th>
+                                        <th>Área en Planta</th>
+                                        <th>Cumplimiento</th>
+                                        <th>Deficiencias Encontradas</th>
+                                        <th>Acción Correctiva en Sitio</th>
+                                        <th>Inspector</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inspectionsTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            Cargando inspecciones...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal 1: Registrar Entrega de Dotación -->
+    <div class="modal-overlay" id="deliveryModal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="deliveryModalTitle">📦 Asignar Dotación de EPP</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseDeliveryModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="deliveryForm">
+                <div class="modal-body">
+                    <div id="deliveryModalAlert" class="alert"></div>
+
+                    <!-- Colaborador receptor -->
+                    <div class="form-group">
+                        <label class="form-label" for="deliveryWorkerSelect">Colaborador / Operario *</label>
+                        <select id="deliveryWorkerSelect" class="form-input" required>
+                            <option value="">-- Seleccionar colaborador --</option>
+                        </select>
+                    </div>
+
+                    <!-- EPP a entregar -->
+                    <div class="form-group">
+                        <label class="form-label" for="deliveryEppSelect">Elemento de Protección Personal (EPP) *</label>
+                        <select id="deliveryEppSelect" class="form-input" required>
+                            <option value="">-- Seleccionar elemento del catálogo --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <!-- Fecha de entrega -->
+                        <div class="form-group">
+                            <label class="form-label" for="deliveryDateInput">Fecha de Entrega *</label>
+                            <input type="date" id="deliveryDateInput" class="form-input" required>
+                        </div>
+
+                        <!-- Cantidad -->
+                        <div class="form-group">
+                            <label class="form-label" for="deliveryQuantityInput">Cantidad *</label>
+                            <input type="number" id="deliveryQuantityInput" class="form-input" value="1" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro de cálculo dinámico de próxima renovación -->
+                    <div class="calc-box" id="renewalCalcBox" style="margin-bottom: 1.25rem;">
+                        <div>
+                            <span style="display: block; font-size: 0.8rem; opacity: 0.85;">Vida útil del elemento: <strong id="calcLifespanText">-</strong></span>
+                            <span>📅 Próxima fecha de reposición estimada:</span>
+                        </div>
+                        <strong id="calcNextRenewalDateText" style="font-size: 1rem;">Selecciona EPP</strong>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="deliveryReasonSelect">Motivo de Entrega *</label>
+                        <select id="deliveryReasonSelect" class="form-input" required>
+                            <option value="DOTACION_PERIODICA" selected>Dotación Periódica Programada</option>
+                            <option value="INGRESO_NUEVO">Nuevo Ingreso a la Planta</option>
+                            <option value="DETERIORO">Reemplazo por Daño o Deterioro</option>
+                            <option value="PERDIDA">Reposición por Pérdida</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="deliveryNotesInput">Observaciones / Talla / Especificación</label>
+                        <input type="text" id="deliveryNotesInput" class="form-input" placeholder="Ej: Talla 40, entrega con firma en planilla física...">
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelDeliveryModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveDelivery">Guardar Asignación</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Registrar Inspección en Planta -->
+    <div class="modal-overlay" id="inspectionModal" role="dialog" aria-modal="true" aria-labelledby="inspectionModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="inspectionModalTitle">🔍 Ronda de Inspección de EPP</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseInspectionModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="inspectionForm">
+                <div class="modal-body">
+                    <div id="inspectionModalAlert" class="alert"></div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inspectionWorkerSelect">Trabajador Inspeccionado *</label>
+                        <select id="inspectionWorkerSelect" class="form-input" required>
+                            <option value="">-- Seleccionar trabajador --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="inspectionDateInput">Fecha de Ronda *</label>
+                            <input type="date" id="inspectionDateInput" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="inspectionAreaInput">Área en Planta *</label>
+                            <input type="text" id="inspectionAreaInput" class="form-input" placeholder="Ej: Beneficio húmedo" list="eppAreasList" required>
+                            <datalist id="eppAreasList">
+                                <option value="Despulpado y Fermentación">
+                                <option value="Beneficio húmedo">
+                                <option value="Nave de Maquinaria y Secado">
+                                <option value="Línea de Selección y Empaque">
+                                <option value="Bodega y Almacén General">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Resultado de la Inspección *</label>
+                        <div style="display: flex; gap: 1.5rem; margin-top: 0.25rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600;">
+                                <input type="radio" name="isCompliantRadio" value="true" checked id="radioCompliantTrue">
+                                🟢 Conforme (Porta todos los EPP correctamente)
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 600;">
+                                <input type="radio" name="isCompliantRadio" value="false" id="radioCompliantFalse">
+                                🔴 No Conforme (Sin EPP o mal uso)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Campos condicionales si es No Conforme -->
+                    <div id="nonCompliantFields" style="display: none; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="inspectionDeficiencies" style="color: #991b1b;">
+                                Deficiencias Encontradas *
+                            </label>
+                            <textarea id="inspectionDeficiencies" class="form-input" rows="2" placeholder="Detalla qué EPP no portaba o en qué condiciones de desgaste se encontraba..."></textarea>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="inspectionActions" style="color: #991b1b;">
+                                Acción Correctiva en Sitio
+                            </label>
+                            <input type="text" id="inspectionActions" class="form-input" placeholder="Ej: Se suministró mascarilla nueva en bodega, retroalimentación verbal...">
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelInspectionModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveInspection">Guardar Inspección</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Añadir Nuevo EPP al Catálogo -->
+    <div class="modal-overlay" id="catalogModal" role="dialog" aria-modal="true" aria-labelledby="catalogModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="catalogModalTitle">🦺 Nuevo Elemento en Catálogo</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseCatalogModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="catalogForm">
+                <div class="modal-body">
+                    <div id="catalogModalAlert" class="alert"></div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="catalogNameInput">Nombre del Elemento *</label>
+                        <input type="text" id="catalogNameInput" class="form-input" placeholder="Ej: Careta de esmerilar con visor de policarbonato" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="catalogCategorySelect">Categoría Anatómica *</label>
+                            <select id="catalogCategorySelect" class="form-input" required>
+                                <option value="CABEZA">CABEZA (Cascos)</option>
+                                <option value="VISUAL">VISUAL (Gafas, Caretas)</option>
+                                <option value="AUDITIVA">AUDITIVA (Tapones, Orejeras)</option>
+                                <option value="RESPIRATORIA">RESPIRATORIA (Mascarillas)</option>
+                                <option value="MANOS">MANOS (Guantes)</option>
+                                <option value="PIES">PIES (Botas)</option>
+                                <option value="CUERPO">CUERPO (Delantales, Petos)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="catalogStandardInput">Norma Técnica de Certificación</label>
+                            <input type="text" id="catalogStandardInput" class="form-input" placeholder="Ej: ANSI Z87.1 / NTC 2272">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="catalogLifespanInput">Vida Útil Estimada (Días) *</label>
+                            <input type="number" id="catalogLifespanInput" class="form-input" value="90" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="catalogStockInput">Stock Inicial en Bodega</label>
+                            <input type="number" id="catalogStockInput" class="form-input" value="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="catalogDescriptionInput">Descripción y Usos Recomendados</label>
+                        <textarea id="catalogDescriptionInput" class="form-input" rows="2" placeholder="Indicaciones técnicas, materiales o áreas de uso obligatorio..."></textarea>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelCatalogModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveCatalog">Guardar en Catálogo</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/epp.js"></script>
+</body>
+</html>

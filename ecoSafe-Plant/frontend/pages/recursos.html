@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSafe Plant - Consumo de Recursos (Spec 003)</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1b4332">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-logo">🌱 EcoSafe Plant</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/pages/dashboard.html" class="nav-item">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/pages/residuos.html" class="nav-item">
+                    <span>🗑️</span>
+                    <span>Residuos (002)</span>
+                </a>
+                <a href="/pages/recursos.html" class="nav-item active">
+                    <span>💧</span>
+                    <span>Agua y Energía (003)</span>
+                </a>
+                <a href="/pages/seguridad.html" class="nav-item">
+                    <span>🦺</span>
+                    <span>Seguridad SST (004)</span>
+                </a>
+                <a href="/pages/epp.html" class="nav-item">
+                    <span>🧤</span>
+                    <span>Dotación EPP (005)</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <small style="opacity: 0.7;">EcoSafe Plant v1.0<br>Módulo Recursos Activo</small>
+            </div>
+        </aside>
+
+        <!-- Contenedor Principal -->
+        <div class="main-wrapper">
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="menu-toggle-btn" id="menuToggle" aria-label="Abrir menú">☰</button>
+                    <div>
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary);">Monitoreo de Recursos: Agua y Energía</h2>
+                        <small style="color: var(--text-muted); font-size: 0.775rem;">Control de medidores, balance de consumos netos y metas ambientales</small>
+                    </div>
+                </div>
+
+                <!-- Perfil y Cierre de Sesión -->
+                <div class="user-profile">
+                    <div>
+                        <strong id="userName" style="display: block; font-size: 0.9rem;">Cargando...</strong>
+                        <div style="display: flex; gap: 0.4rem; align-items: center; margin-top: 2px;">
+                            <span id="userRole" class="user-badge-role">OPERARIO</span>
+                            <small id="userArea" style="color: var(--text-muted); font-size: 0.775rem;"></small>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="btn-logout" title="Cerrar Sesión">
+                        Salir 🚪
+                    </button>
+                </div>
+            </header>
+
+            <!-- Área de Contenido -->
+            <main class="content-area">
+                <!-- Alerta global de notificaciones -->
+                <div id="globalAlert" class="alert" style="margin-bottom: 1.25rem;"></div>
+
+                <!-- Pestañas de Selección de Recurso (Agua / Energía) -->
+                <nav class="tab-navigation">
+                    <button class="tab-btn tab-water active" id="tabWaterBtn" data-resource="AGUA">
+                        💧 Consumo de Agua (m³)
+                    </button>
+                    <button class="tab-btn tab-energy" id="tabEnergyBtn" data-resource="ENERGIA">
+                        ⚡ Energía Eléctrica (kWh)
+                    </button>
+                </nav>
+
+                <!-- Tarjetas de KPIs del Recurso Activo -->
+                <section class="kpi-grid">
+                    <!-- KPI 1: Consumo Total -->
+                    <div class="kpi-card kpi-primary" id="kpiCardConsumption">
+                        <div class="kpi-header">
+                            <span class="kpi-title" id="kpiLabelConsumption">Consumo de Agua</span>
+                            <span class="kpi-icon" id="kpiIconResource">💧</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiTotalConsumption">0.00</span>
+                            <span class="kpi-unit" id="kpiUnitDisplay">m³</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>vs mes anterior:</span>
+                            <strong id="kpiDiffPercent">0%</strong>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Cumplimiento de Meta Ambiental -->
+                    <div class="kpi-card kpi-success" id="kpiCardTarget">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Meta Ambiental Mensual</span>
+                            <span class="kpi-icon">🎯</span>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                <span class="kpi-value" id="kpiTargetPercent">0%</span>
+                                <small style="color: var(--text-muted); font-weight: 600;" id="kpiTargetDetails">0 / 0</small>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar progress-success" id="kpiProgressBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-subtext" id="kpiTargetStatusText">
+                            <span>Dentro del límite ambiental</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Costo Estimado Facturado -->
+                    <div class="kpi-card kpi-warning">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Costo Facturado Estimado</span>
+                            <span class="kpi-icon">💲</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiTotalCost">$0</span>
+                            <span class="kpi-unit">COP</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>Total combinado ambos servicios: <strong id="kpiCombinedCost">$0</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: Total de Registros -->
+                    <div class="kpi-card kpi-primary">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Lecturas Realizadas</span>
+                            <span class="kpi-icon">📈</span>
+                        </div>
+                        <div>
+                            <span class="kpi-value" id="kpiReadingsCount">0</span>
+                            <span class="kpi-unit">cortes</span>
+                        </div>
+                        <div class="kpi-subtext">
+                            <span>Medidores activos monitoreados</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Barra de Herramientas y Filtros -->
+                <section class="toolbar-card">
+                    <div class="toolbar-filters">
+                        <!-- Buscador en tiempo real -->
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Buscar por medidor, área o notas..." autocomplete="off">
+                        </div>
+
+                        <!-- Filtro por Medidor -->
+                        <select id="selectMeter" class="filter-select">
+                            <option value="">Todos los Medidores</option>
+                        </select>
+
+                        <!-- Filtro Mes -->
+                        <select id="selectMonth" class="filter-select">
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11" selected>Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+
+                        <!-- Filtro Año -->
+                        <select id="selectYear" class="filter-select">
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+
+                    <div class="toolbar-buttons">
+                        <button id="btnOpenTargetModal" class="btn-secondary" title="Configurar metas mensuales de consumo">
+                            🎯 Metas Mensuales
+                        </button>
+                        <button id="btnExportCsv" class="btn-secondary" title="Exportar tabla a CSV">
+                            📥 Exportar CSV
+                        </button>
+                        <button id="btnOpenReadingModal" class="btn-sm-action">
+                            ➕ Registrar Lectura
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Tabla de Historial de Lecturas -->
+                <section class="table-card">
+                    <div class="table-responsive">
+                        <table class="data-table" id="readingsTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Medidor</th>
+                                    <th>Recurso</th>
+                                    <th>Área / Ubicación</th>
+                                    <th>Lectura Medidor</th>
+                                    <th>Consumo Neto</th>
+                                    <th>Costo ($ COP)</th>
+                                    <th>Registrado Por</th>
+                                </tr>
+                            </thead>
+                            <tbody id="readingsTableBody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                        Cargando lecturas del medidor...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Registrar Nueva Lectura -->
+    <div class="modal-overlay" id="readingModal" role="dialog" aria-modal="true" aria-labelledby="readingModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="readingModalTitle">Registrar Lectura de Medidor</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseReadingModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="readingForm">
+                <div class="modal-body">
+                    <div id="modalAlert" class="alert"></div>
+
+                    <!-- Punto de medición / Medidor -->
+                    <div class="form-group">
+                        <label class="form-label" for="meterSelect">Medidor / Punto de Medición *</label>
+                        <select id="meterSelect" class="form-input" required>
+                            <option value="">-- Seleccione un medidor --</option>
+                        </select>
+                    </div>
+
+                    <!-- Cuadro informativo de lectura anterior -->
+                    <div id="prevReadingInfo" style="background-color: #f8fafc; border: 1px dashed var(--border); padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.825rem; margin-bottom: 1.25rem; color: var(--text-muted);">
+                        📌 Lectura anterior registrada: <strong id="prevReadingText" style="color: var(--text-dark);">Seleccione un medidor</strong>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <!-- Fecha del corte/lectura -->
+                        <div class="form-group">
+                            <label class="form-label" for="readingDate">Fecha de Lectura *</label>
+                            <input type="date" id="readingDate" class="form-input" required>
+                        </div>
+
+                        <!-- Valor de lectura actual -->
+                        <div class="form-group">
+                            <label class="form-label" for="readingValue">Lectura Actual del Medidor *</label>
+                            <input type="number" id="readingValue" class="form-input" placeholder="Ej: 1850.00" step="0.01" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- Cálculo dinámico en tiempo real -->
+                    <div class="calc-box" id="calcBox">
+                        <span>⚡ Consumo neto calculado:</span>
+                        <strong id="calcConsumptionDisplay">0.00 m³</strong>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <!-- Costo facturado estimado -->
+                        <div class="form-group">
+                            <label class="form-label" for="costAmount">Costo Facturado Estimado ($ COP)</label>
+                            <input type="number" id="costAmount" class="form-input" placeholder="Opcional: Ej. 350000" step="1" min="0">
+                        </div>
+
+                        <!-- Notas / Novedad -->
+                        <div class="form-group">
+                            <label class="form-label" for="notes">Observaciones / Novedad</label>
+                            <input type="text" id="notes" class="form-input" placeholder="Ej: Mantenimiento de válvula, fuga corregida...">
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelReadingModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveReading">Guardar Lectura</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Configurar Metas Ambientales -->
+    <div class="modal-overlay" id="targetModal" role="dialog" aria-modal="true" aria-labelledby="targetModalTitle">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title" id="targetModalTitle">🎯 Configurar Meta Ambiental Mensual</h3>
+                <button type="button" class="modal-close-btn" id="btnCloseTargetModal" aria-label="Cerrar modal">&times;</button>
+            </header>
+
+            <form id="targetForm">
+                <div class="modal-body">
+                    <div id="targetModalAlert" class="alert"></div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="targetResourceSelect">Tipo de Recurso *</label>
+                        <select id="targetResourceSelect" class="form-input" required>
+                            <option value="AGUA">💧 Agua Potable / De Proceso (m³)</option>
+                            <option value="ENERGIA">⚡ Energía Eléctrica (kWh)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="targetMonthInput">Mes *</label>
+                            <select id="targetMonthInput" class="form-input" required>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11" selected>Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="targetYearInput">Año *</label>
+                            <input type="number" id="targetYearInput" class="form-input" value="2026" min="2024" max="2035" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="targetConsumptionInput">Límite / Meta Máxima de Consumo *</label>
+                        <input type="number" id="targetConsumptionInput" class="form-input" placeholder="Ej: 450.00" step="0.01" min="1" required>
+                        <small style="color: var(--text-muted); display: block; margin-top: 4px;">
+                            Si el consumo supera este valor, el sistema emitirá alertas visuales en el panel.
+                        </small>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelTargetModal">Cancelar</button>
+                    <button type="submit" class="btn-sm-action" id="btnSaveTarget">Guardar Meta</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/recursos.js"></script>
+</body>
+</html>

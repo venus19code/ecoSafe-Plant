@@ -86,22 +86,22 @@ CREATE TABLE utility_targets (
 > Marca cada tarea cuando esté completada. Actualiza la fecha entre paréntesis al finalizar.
 
 ### Base de Datos MySQL
-- [ ] Incluir DDL de `utility_meters`, `utility_readings` y `utility_targets` en `schema.sql`
-- [ ] Agregar medidores predeterminados en `seed.sql` (Medidor General Agua, Medidor General Energía)
+- [x] Incluir DDL de `utility_meters`, `utility_readings` y `utility_targets` en `schema.sql` (18/11/2026)
+- [x] Agregar medidores predeterminados en `seed.sql` (Medidor General Agua, Medidor General Energía) (18/11/2026)
 
 ### Backend en Python
-- [ ] Crear `backend/routes/utility_routes.py`
-- [ ] Endpoint `GET /api/utilities/meters` para listar medidores activos
-- [ ] Endpoint `POST /api/utilities/readings` con cálculo automático de diferencia respecto a la lectura anterior
-- [ ] Endpoint `GET /api/utilities/readings` con filtros de medidor y periodo
-- [ ] Endpoint `GET /api/utilities/summary` con totales mensuales y comparación contra metas
+- [x] Crear `backend/routes/utility_routes.py` (18/11/2026)
+- [x] Endpoint `GET /api/utilities/meters` para listar medidores activos (18/11/2026)
+- [x] Endpoint `POST /api/utilities/readings` con cálculo automático de diferencia respecto a la lectura anterior (18/11/2026)
+- [x] Endpoint `GET /api/utilities/readings` con filtros de medidor y periodo (18/11/2026)
+- [x] Endpoint `GET /api/utilities/summary` con totales mensuales y comparación contra metas (18/11/2026)
 
 ### Frontend en HTML / CSS / JavaScript
-- [ ] Maquetar la página `frontend/pages/recursos.html` con pestañas (Agua / Energía)
-- [ ] Crear tarjetas de resumen (Consumo total m³/kWh, Costo estimado, Porcentaje de meta)
-- [ ] Crear modal para registrar nueva lectura con pre-llenado de la lectura anterior
-- [ ] Desarrollar `frontend/js/recursos.js` para consumir la API y actualizar las vistas
-- [ ] Añadir modal de configuración de metas mensuales (solo ADMIN/SUPERVISOR)
+- [x] Maquetar la página `frontend/pages/recursos.html` con pestañas (Agua / Energía) (18/11/2026)
+- [x] Crear tarjetas de resumen (Consumo total m³/kWh, Costo estimado, Porcentaje de meta) (18/11/2026)
+- [x] Crear modal para registrar nueva lectura con pre-llenado de la lectura anterior (18/11/2026)
+- [x] Desarrollar `frontend/js/recursos.js` para consumir la API y actualizar las vistas (18/11/2026)
+- [x] Añadir modal de configuración de metas mensuales (solo ADMIN/SUPERVISOR) (18/11/2026)
 
 
 ---
@@ -112,25 +112,25 @@ CREATE TABLE utility_targets (
 
 ### Backend (API Python)
 
-- [ ] **TEST-003-B1**: `GET /api/utilities/meters` → retorna `200` con los medidores sembrados (Medidor General Agua, Medidor General Energía).
-- [ ] **TEST-003-B2**: `POST /api/utilities/readings` con la primera lectura de un medidor (sin lectura previa) → retorna `201` con `consumption` igual a `reading_value`.
-- [ ] **TEST-003-B3**: `POST /api/utilities/readings` con una segunda lectura → retorna `201` con `consumption = lectura_nueva - lectura_anterior` calculado automáticamente.
-- [ ] **TEST-003-B4**: `POST /api/utilities/readings` con `reading_value` menor que la lectura anterior → retorna `400 Bad Request` (el medidor no puede retroceder).
-- [ ] **TEST-003-B5**: `GET /api/utilities/readings?resource_type=AGUA&month=11&year=2026` → retorna solo lecturas de agua del mes indicado.
-- [ ] **TEST-003-B6**: `GET /api/utilities/summary?month=11&year=2026` → retorna consumo total de agua y energía del mes, costo acumulado y porcentaje de meta consumida.
-- [ ] **TEST-003-B7**: `POST /api/utilities/targets` con `resource_type=AGUA, target_month=11, target_year=2026, target_consumption=500` → retorna `201`.
-- [ ] **TEST-003-B8**: `POST /api/utilities/targets` con la misma combinación (mes/año/recurso ya existente) → actualiza el valor en lugar de duplicar (upsert o `409` descriptivo).
+- [x] **TEST-003-B1**: `GET /api/utilities/meters` → retorna `200` con los medidores sembrados (Medidor General Agua, Medidor General Energía).
+- [x] **TEST-003-B2**: `POST /api/utilities/readings` con la primera lectura de un medidor (sin lectura previa) → retorna `201` con `consumption` igual a `reading_value`.
+- [x] **TEST-003-B3**: `POST /api/utilities/readings` con una segunda lectura → retorna `201` con `consumption = lectura_nueva - lectura_anterior` calculado automáticamente.
+- [x] **TEST-003-B4**: `POST /api/utilities/readings` con `reading_value` menor que la lectura anterior → retorna `400 Bad Request` (el medidor no puede retroceder).
+- [x] **TEST-003-B5**: `GET /api/utilities/readings?resource_type=AGUA&month=11&year=2026` → retorna solo lecturas de agua del mes indicado.
+- [x] **TEST-003-B6**: `GET /api/utilities/summary?month=11&year=2026` → retorna consumo total de agua y energía del mes, costo acumulado y porcentaje de meta consumida.
+- [x] **TEST-003-B7**: `POST /api/utilities/targets` con `resource_type=AGUA, target_month=11, target_year=2026, target_consumption=500` → retorna `201`.
+- [x] **TEST-003-B8**: `POST /api/utilities/targets` con la misma combinación (mes/año/recurso ya existente) → actualiza el valor en lugar de duplicar (upsert o `409` descriptivo).
 
 ### Base de Datos MySQL
 
-- [ ] **TEST-003-D1**: Verificar que la restricción `UNIQUE KEY uq_target` en `utility_targets` impide duplicados de meta para el mismo mes, año y tipo de recurso.
-- [ ] **TEST-003-D2**: Confirmar que insertar una lectura con un `meter_id` inexistente falla por clave foránea.
+- [x] **TEST-003-D1**: Verificar que la restricción `UNIQUE KEY uq_target` en `utility_targets` impide duplicados de meta para el mismo mes, año y tipo de recurso.
+- [x] **TEST-003-D2**: Confirmar que insertar una lectura con un `meter_id` inexistente falla por clave foránea.
 
 ### Frontend (HTML + CSS + JS)
 
-- [ ] **TEST-003-F1**: La página `recursos.html` carga con las dos pestañas (Agua / Energía) visibles y funcionales.
-- [ ] **TEST-003-F2**: Al abrir el modal de nueva lectura, el campo "Última lectura registrada" se pre-llena con el valor de la lectura anterior del medidor seleccionado.
-- [ ] **TEST-003-F3**: Al escribir la lectura actual, el campo "Consumo calculado" se actualiza en tiempo real mostrando la diferencia.
-- [ ] **TEST-003-F4**: La barra de progreso de meta muestra el porcentaje correcto (ej. si la meta es 500 m³ y se consumieron 300, debe mostrar 60%).
-- [ ] **TEST-003-F5**: Cuando el consumo supera el 100% de la meta, la barra y la tarjeta KPI cambian a color rojo de alerta.
-- [ ] **TEST-003-F6**: La página es usable en celular (375px): las tarjetas KPI y la tabla se apilan verticalmente sin desbordamiento.
+- [x] **TEST-003-F1**: La página `recursos.html` carga con las dos pestañas (Agua / Energía) visibles y funcionales.
+- [x] **TEST-003-F2**: Al abrir el modal de nueva lectura, el campo "Última lectura registrada" se pre-llena con el valor de la lectura anterior del medidor seleccionado.
+- [x] **TEST-003-F3**: Al escribir la lectura actual, el campo "Consumo calculado" se actualiza en tiempo real mostrando la diferencia.
+- [x] **TEST-003-F4**: La barra de progreso de meta muestra el porcentaje correcto (ej. si la meta es 500 m³ y se consumieron 300, debe mostrar 60%).
+- [x] **TEST-003-F5**: Cuando el consumo supera el 100% de la meta, la barra y la tarjeta KPI cambian a color rojo de alerta.
+- [x] **TEST-003-F6**: La página es usable en celular (375px): las tarjetas KPI y la tabla se apilan verticalmente sin desbordamiento.

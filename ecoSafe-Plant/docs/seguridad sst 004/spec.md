@@ -79,23 +79,23 @@ CREATE TABLE sst_incidents (
 > Marca cada tarea cuando esté completada. Actualiza la fecha entre paréntesis al finalizar.
 
 ### Base de Datos MySQL
-- [ ] Incluir sentencias DDL de `sst_hazards` y `sst_incidents` en `schema.sql`
-- [ ] Agregar datos semilla en `seed.sql` con matriz de peligros típica de plantas de producción
+- [x] Incluir sentencias DDL de `sst_hazards` y `sst_incidents` en `schema.sql` (18/11/2026)
+- [x] Agregar datos semilla en `seed.sql` con matriz de peligros típica de plantas de producción (18/11/2026)
 
 ### Backend en Python
-- [ ] Crear `backend/routes/sst_routes.py`
-- [ ] Endpoints CRUD para la matriz de peligros (`/api/sst/hazards`)
-- [ ] Endpoint para reportar incidentes `POST /api/sst/incidents`
-- [ ] Endpoint `GET /api/sst/incidents` con filtros por severidad y estado
-- [ ] Endpoint `PATCH /api/sst/incidents/<id>/status` para cierre de acciones correctivas
-- [ ] Endpoint `GET /api/sst/summary` con métricas de seguridad para el dashboard
+- [x] Crear `backend/routes/sst_routes.py` (18/11/2026)
+- [x] Endpoints CRUD para la matriz de peligros (`/api/sst/hazards`) (18/11/2026)
+- [x] Endpoint para reportar incidentes `POST /api/sst/incidents` (18/11/2026)
+- [x] Endpoint `GET /api/sst/incidents` con filtros por severidad y estado (18/11/2026)
+- [x] Endpoint `PATCH /api/sst/incidents/<id>/status` para cierre de acciones correctivas (18/11/2026)
+- [x] Endpoint `GET /api/sst/summary` con métricas de seguridad para el dashboard (18/11/2026)
 
 ### Frontend en HTML / CSS / JavaScript
-- [ ] Maquetar la página `frontend/pages/seguridad.html`
-- [ ] Crear visualizador de matriz de peligros con filtros y códigos de color según severidad
-- [ ] Crear modal de registro de nuevo peligro en la matriz
-- [ ] Crear formulario táctil para reporte de incidentes y condiciones inseguras
-- [ ] Desarrollar `frontend/js/seguridad.js` con la lógica interactiva completa
+- [x] Maquetar la página `frontend/pages/seguridad.html` (18/11/2026)
+- [x] Crear visualizador de matriz de peligros con filtros y códigos de color según severidad (18/11/2026)
+- [x] Crear modal de registro de nuevo peligro en la matriz (18/11/2026)
+- [x] Crear formulario táctil para reporte de incidentes y condiciones inseguras (18/11/2026)
+- [x] Desarrollar `frontend/js/seguridad.js` con la lógica interactiva completa (18/11/2026)
 
 
 ---
@@ -106,28 +106,28 @@ CREATE TABLE sst_incidents (
 
 ### Backend (API Python)
 
-- [ ] **TEST-004-B1**: `GET /api/sst/hazards` → retorna `200` con la lista de peligros sembrados en la base de datos.
-- [ ] **TEST-004-B2**: `GET /api/sst/hazards?area=Fermentacion` → retorna únicamente peligros del área de Fermentación.
-- [ ] **TEST-004-B3**: `GET /api/sst/hazards?risk_level=CRITICO` → retorna solo peligros con nivel CRÍTICO.
-- [ ] **TEST-004-B4**: `POST /api/sst/hazards` con datos válidos (área, actividad, tipo de peligro, descripción, nivel de riesgo) → retorna `201` con el peligro creado.
-- [ ] **TEST-004-B5**: `PUT /api/sst/hazards/<id>` actualizando `risk_level` y `controls_in_place` → retorna `200` con los valores actualizados.
-- [ ] **TEST-004-B6**: `DELETE /api/sst/hazards/<id>` con rol `OPERARIO` → retorna `403 Forbidden`.
-- [ ] **TEST-004-B7**: `POST /api/sst/incidents` con rol `OPERARIO` y datos válidos → retorna `201` con estado inicial `PENDIENTE`.
-- [ ] **TEST-004-B8**: `GET /api/sst/incidents?status=PENDIENTE` → retorna solo incidentes sin resolver.
-- [ ] **TEST-004-B9**: `PATCH /api/sst/incidents/<id>/status` cambiando a `RESUELTO` con `resolution_notes` → retorna `200` y el campo `resolved_at` se rellena con la fecha y hora actual.
-- [ ] **TEST-004-B10**: `GET /api/sst/summary` → retorna conteo de peligros por nivel de riesgo e incidentes por estado, incluyendo el total de incidentes `PENDIENTE` y `EN_ATENCION`.
+- [x] **TEST-004-B1**: `GET /api/sst/hazards` → retorna `200` con la lista de peligros sembrados en la base de datos.
+- [x] **TEST-004-B2**: `GET /api/sst/hazards?area=Fermentacion` → retorna únicamente peligros del área de Fermentación.
+- [x] **TEST-004-B3**: `GET /api/sst/hazards?risk_level=CRITICO` → retorna solo peligros con nivel CRÍTICO.
+- [x] **TEST-004-B4**: `POST /api/sst/hazards` con datos válidos (área, actividad, tipo de peligro, descripción, nivel de riesgo) → retorna `201` con el peligro creado.
+- [x] **TEST-004-B5**: `PUT /api/sst/hazards/<id>` actualizando `risk_level` y `controls_in_place` → retorna `200` con los valores actualizados.
+- [x] **TEST-004-B6**: `DELETE /api/sst/hazards/<id>` con rol `OPERARIO` → retorna `403 Forbidden`.
+- [x] **TEST-004-B7**: `POST /api/sst/incidents` con rol `OPERARIO` y datos válidos → retorna `201` con estado inicial `PENDIENTE`.
+- [x] **TEST-004-B8**: `GET /api/sst/incidents?status=PENDIENTE` → retorna solo incidentes sin resolver.
+- [x] **TEST-004-B9**: `PATCH /api/sst/incidents/<id>/status` cambiando a `RESUELTO` con `resolution_notes` → retorna `200` y el campo `resolved_at` se rellena con la fecha y hora actual.
+- [x] **TEST-004-B10**: `GET /api/sst/summary` → retorna conteo de peligros por nivel de riesgo e incidentes por estado, incluyendo el total de incidentes `PENDIENTE` y `EN_ATENCION`.
 
 ### Base de Datos MySQL
 
-- [ ] **TEST-004-D1**: Confirmar que la semilla carga al menos 5 peligros de distintas categorías (Físico, Mecánico, Biológico, Químico, Biomecánico).
-- [ ] **TEST-004-D2**: Verificar que un incidente con `assigned_to_user_id` inexistente falla por clave foránea.
+- [x] **TEST-004-D1**: Confirmar que la semilla carga al menos 5 peligros de distintas categorías (Físico, Mecánico, Biológico, Químico, Biomecánico).
+- [x] **TEST-004-D2**: Verificar que un incidente con `assigned_to_user_id` inexistente falla por clave foránea.
 
 ### Frontend (HTML + CSS + JS)
 
-- [ ] **TEST-004-F1**: La página `seguridad.html` carga con dos secciones visibles: "Matriz de Peligros" e "Incidentes Reportados".
-- [ ] **TEST-004-F2**: Cada peligro en la matriz muestra el badge de nivel de riesgo con el color correcto (🟢 Bajo, 🟡 Medio, 🟠 Alto, 🔴 Crítico).
-- [ ] **TEST-004-F3**: El filtro por área actualiza la lista de peligros sin recargar la página.
-- [ ] **TEST-004-F4**: El formulario de reporte de incidente es accesible con el rol `OPERARIO` y solo requiere 3 campos mínimos (descripción, lugar, urgencia).
-- [ ] **TEST-004-F5**: Enviar el formulario de reporte → el incidente aparece en la lista de incidentes con estado `PENDIENTE`.
-- [ ] **TEST-004-F6**: Un supervisor puede cambiar el estado de un incidente a `EN_ATENCION` y luego a `RESUELTO` desde la interfaz.
-- [ ] **TEST-004-F7**: El formulario de reporte es cómodo de usar en celular (botones grandes, campos con suficiente espacio táctil).
+- [x] **TEST-004-F1**: La página `seguridad.html` carga con dos secciones visibles: "Matriz de Peligros" e "Incidentes Reportados".
+- [x] **TEST-004-F2**: Cada peligro en la matriz muestra el badge de nivel de riesgo con el color correcto (🟢 Bajo, 🟡 Medio, 🟠 Alto, 🔴 Crítico).
+- [x] **TEST-004-F3**: El filtro por área actualiza la lista de peligros sin recargar la página.
+- [x] **TEST-004-F4**: El formulario de reporte de incidente es accesible con el rol `OPERARIO` y solo requiere 3 campos mínimos (descripción, lugar, urgencia).
+- [x] **TEST-004-F5**: Enviar el formulario de reporte → el incidente aparece en la lista de incidentes con estado `PENDIENTE`.
+- [x] **TEST-004-F6**: Un supervisor puede cambiar el estado de un incidente a `EN_ATENCION` y luego a `RESUELTO` desde la interfaz.
+- [x] **TEST-004-F7**: El formulario de reporte es cómodo de usar en celular (botones grandes, campos con suficiente espacio táctil).
