@@ -88,23 +88,23 @@ CREATE TABLE waste_records (
 > Marca cada tarea cuando esté completada. Actualiza la fecha entre paréntesis al finalizar.
 
 ### Base de Datos MySQL
-- [ ] Crear migración para `waste_categories`, `waste_types` y `waste_records` en `schema.sql`
-- [ ] Agregar datos semilla en `seed.sql` con categorías estándar (Orgánico, Reciclable, Ordinario, Peligroso)
-- [ ] Agregar tipos de residuos semilla (cáscara de cacao, mucílago, pulpa de café, plásticos, aceites usados)
+- [x] Crear migración para `waste_categories`, `waste_types` y `waste_records` en `schema.sql` (18/11/2026)
+- [x] Agregar datos semilla en `seed.sql` con categorías estándar (Orgánico, Reciclable, Ordinario, Peligroso) (18/11/2026)
+- [x] Agregar tipos de residuos semilla (cáscara de cacao, mucílago, pulpa de café, plásticos, aceites usados) (18/11/2026)
 
 ### Backend en Python
-- [ ] Crear `backend/routes/waste_routes.py`
-- [ ] Endpoint `GET /api/waste/types` para obtener categorías y tipos
-- [ ] Endpoint `POST /api/waste/records` con validación de datos numéricos y fechas
-- [ ] Endpoints `GET`, `PUT`, `DELETE` para `/api/waste/records/<id>`
-- [ ] Endpoint `GET /api/waste/summary` para agregaciones mensuales y % de aprovechamiento
+- [x] Crear `backend/routes/waste_routes.py` (18/11/2026)
+- [x] Endpoint `GET /api/waste/types` para obtener categorías y tipos (18/11/2026)
+- [x] Endpoint `POST /api/waste/records` con validación de datos numéricos y fechas (18/11/2026)
+- [x] Endpoints `GET`, `PUT`, `DELETE` para `/api/waste/records/<id>` (18/11/2026)
+- [x] Endpoint `GET /api/waste/summary` para agregaciones mensuales y % de aprovechamiento (18/11/2026)
 
 ### Frontend en HTML / CSS / JavaScript
-- [ ] Maquetar la página `frontend/pages/residuos.html`
-- [ ] Añadir tarjetas de KPIs superiores (Total generado, % valorizado, total peligroso)
-- [ ] Diseñar formulario modal en HTML/CSS para registrar un residuo
-- [ ] Implementar `frontend/js/residuos.js` con consumo de API mediante `fetch()`
-- [ ] Añadir buscador en tiempo real y filtros por fecha y categoría en la tabla
+- [x] Maquetar la página `frontend/pages/residuos.html` (18/11/2026)
+- [x] Añadir tarjetas de KPIs superiores (Total generado, % valorizado, total peligroso) (18/11/2026)
+- [x] Diseñar formulario modal en HTML/CSS para registrar un residuo (18/11/2026)
+- [x] Implementar `frontend/js/residuos.js` con consumo de API mediante `fetch()` (18/11/2026)
+- [x] Añadir buscador en tiempo real y filtros por fecha y categoría en la tabla (18/11/2026)
 
 
 ---
@@ -115,28 +115,28 @@ CREATE TABLE waste_records (
 
 ### Backend (API Python)
 
-- [ ] **TEST-002-B1**: `GET /api/waste/types` → retorna `200` con lista de categorías y tipos de residuos precargados (incluye Orgánicos, Reciclables, Ordinarios y Peligrosos).
-- [ ] **TEST-002-B2**: `POST /api/waste/records` con datos válidos (tipo, cantidad, área, método de disposición) → retorna `201` con el registro creado.
-- [ ] **TEST-002-B3**: `POST /api/waste/records` con `quantity` negativa → retorna `400 Bad Request` con mensaje de error descriptivo.
-- [ ] **TEST-002-B4**: `POST /api/waste/records` sin token JWT → retorna `401 Unauthorized`.
-- [ ] **TEST-002-B5**: `GET /api/waste/records?month=11&year=2026` → retorna solo registros del mes indicado.
-- [ ] **TEST-002-B6**: `GET /api/waste/records?category=PELIGROSO` → retorna solo registros de residuos peligrosos.
-- [ ] **TEST-002-B7**: `PUT /api/waste/records/<id>` con datos actualizados → retorna `200` con los datos modificados.
-- [ ] **TEST-002-B8**: `DELETE /api/waste/records/<id>` con rol `OPERARIO` → retorna `403 Forbidden`.
-- [ ] **TEST-002-B9**: `DELETE /api/waste/records/<id>` con rol `ADMIN` → retorna `200` y el registro desaparece de la base de datos.
-- [ ] **TEST-002-B10**: `GET /api/waste/summary` → retorna totales mensuales, el campo `valorization_percent` calculado correctamente (residuos aprovechados / total * 100).
+- [x] **TEST-002-B1**: `GET /api/waste/types` → retorna `200` con lista de categorías y tipos de residuos precargados (incluye Orgánicos, Reciclables, Ordinarios y Peligrosos).
+- [x] **TEST-002-B2**: `POST /api/waste/records` con datos válidos (tipo, cantidad, área, método de disposición) → retorna `201` con el registro creado.
+- [x] **TEST-002-B3**: `POST /api/waste/records` con `quantity` negativa → retorna `400 Bad Request` con mensaje de error descriptivo.
+- [x] **TEST-002-B4**: `POST /api/waste/records` sin token JWT → retorna `401 Unauthorized`.
+- [x] **TEST-002-B5**: `GET /api/waste/records?month=11&year=2026` → retorna solo registros del mes indicado.
+- [x] **TEST-002-B6**: `GET /api/waste/records?category=PELIGROSO` → retorna solo registros de residuos peligrosos.
+- [x] **TEST-002-B7**: `PUT /api/waste/records/<id>` con datos actualizados → retorna `200` con los datos modificados.
+- [x] **TEST-002-B8**: `DELETE /api/waste/records/<id>` con rol `OPERARIO` → retorna `403 Forbidden`.
+- [x] **TEST-002-B9**: `DELETE /api/waste/records/<id>` con rol `ADMIN` → retorna `200` y el registro desaparece de la base de datos.
+- [x] **TEST-002-B10**: `GET /api/waste/summary` → retorna totales mensuales, el campo `valorization_percent` calculado correctamente (residuos aprovechados / total * 100).
 
 ### Base de Datos MySQL
 
-- [ ] **TEST-002-D1**: Verificar que insertar un `waste_record` con un `waste_type_id` inexistente falla por clave foránea.
-- [ ] **TEST-002-D2**: Confirmar que las semillas en `seed.sql` precargan al menos 4 categorías y 8 tipos de residuos.
+- [x] **TEST-002-D1**: Verificar que insertar un `waste_record` con un `waste_type_id` inexistente falla por clave foránea.
+- [x] **TEST-002-D2**: Confirmar que las semillas en `seed.sql` precargan al menos 4 categorías y 8 tipos de residuos.
 
 ### Frontend (HTML + CSS + JS)
 
-- [ ] **TEST-002-F1**: La página `residuos.html` carga y muestra las tarjetas KPI del mes con valores (aunque sean cero inicialmente).
-- [ ] **TEST-002-F2**: El dropdown de "Tipo de residuo" en el formulario modal se llena dinámicamente con los datos de `GET /api/waste/types`.
-- [ ] **TEST-002-F3**: Registrar un residuo desde el formulario modal → aparece inmediatamente en la tabla sin recargar la página.
-- [ ] **TEST-002-F4**: Escribir texto en el buscador → la tabla filtra registros en tiempo real.
-- [ ] **TEST-002-F5**: Cambiar el filtro de mes → la tabla y las tarjetas KPI se actualizan con los datos del mes seleccionado.
-- [ ] **TEST-002-F6**: Los badges de categoría muestran el color correcto (verde para Orgánicos, azul para Reciclables, rojo para Peligrosos).
-- [ ] **TEST-002-F7**: La página es usable en un celular de 375px de ancho (formulario, tabla y KPIs no se desbordan).
+- [x] **TEST-002-F1**: La página `residuos.html` carga y muestra las tarjetas KPI del mes con valores (aunque sean cero inicialmente).
+- [x] **TEST-002-F2**: El dropdown de "Tipo de residuo" en el formulario modal se llena dinámicamente con los datos de `GET /api/waste/types`.
+- [x] **TEST-002-F3**: Registrar un residuo desde el formulario modal → aparece inmediatamente en la tabla sin recargar la página.
+- [x] **TEST-002-F4**: Escribir texto en el buscador → la tabla filtra registros en tiempo real.
+- [x] **TEST-002-F5**: Cambiar el filtro de mes → la tabla y las tarjetas KPI se actualizan con los datos del mes seleccionado.
+- [x] **TEST-002-F6**: Los badges de categoría muestran el color correcto (verde para Orgánicos, azul para Reciclables, rojo para Peligrosos).
+- [x] **TEST-002-F7**: La página es usable en un celular de 375px de ancho (formulario, tabla y KPIs no se desbordan).

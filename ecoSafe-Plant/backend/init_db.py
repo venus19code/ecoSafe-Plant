@@ -84,6 +84,22 @@ def run_init_db():
                 FROM users WHERE email = 'admin@ecosafe.com' LIMIT 1;
             """)
 
+        # 4. Cargar datos semilla generales de seed.sql (incluyendo residuos Spec 002)
+        seed_path = os.path.join(base_dir, "seed.sql")
+        if os.path.exists(seed_path):
+            print(f"Leyendo archivo de semillas: {seed_path}")
+            with open(seed_path, "r", encoding="utf-8") as f:
+                seed_sql = f.read()
+            with conn.cursor() as cursor:
+                seed_statements = [s.strip() for s in seed_sql.split(";") if s.strip()]
+                for s in seed_statements:
+                    if not s.upper().startswith("USE") and not s.upper().startswith("CREATE DATABASE"):
+                        try:
+                            cursor.execute(s)
+                        except Exception as ex:
+                            print(f"  [Aviso al ejecutar semilla] {ex}")
+            print("[OK] Datos semilla de Spec 002 (categorías, tipos y registros de residuos) aplicados.")
+
         conn.close()
         print("=" * 60)
         print("¡INICIALIZACIÓN COMPLETADA CON ÉXITO!")

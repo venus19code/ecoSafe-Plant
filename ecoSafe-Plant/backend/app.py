@@ -3,6 +3,7 @@ from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 from config import Config
 from routes.auth_routes import auth_bp
+from routes.waste_routes import waste_bp
 
 # Rutas base
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,6 +17,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Registrar Blueprints de API
 app.register_blueprint(auth_bp, url_prefix="/api")
+app.register_blueprint(waste_bp, url_prefix="/api")
 
 # ==========================================================
 # RUTAS PARA SERVIR EL FRONTEND (ARQUITECTURA MONOLITO)
