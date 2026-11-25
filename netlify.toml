@@ -1,0 +1,22 @@
+# ==========================================================
+# NETLIFY - Solo el frontend estático de EcoSafe Plant
+# ==========================================================
+# El repositorio tiene el frontend en "ecoSafe-Plant/frontend".
+# No hay build: son HTML, CSS y JS puros.
+
+[build]
+  publish = "ecoSafe-Plant/frontend"
+  # Opcional: si defines la variable de entorno ECOSAFE_API_URL en Netlify,
+  # se escribe automáticamente en js/config.js durante el despliegue.
+  command = "if [ -n \"$ECOSAFE_API_URL\" ]; then printf 'window.ECOSAFE_API_URL = \"%s\";\\n' \"$ECOSAFE_API_URL\" > ecoSafe-Plant/frontend/js/config.js; fi"
+
+# Los JS se revalidan siempre para evitar que el navegador use una versión vieja
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600"

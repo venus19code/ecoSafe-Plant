@@ -4,12 +4,27 @@
  * ==========================================================
  */
 
+// Base de rutas del frontend: funciona abriendo los HTML directamente (file://) o servidos por Flask
+const APP_ROOT = window.location.pathname.replace(/\\/g, "/").includes("/pages/") ? "../" : "./";
+
 const API_CONFIG = {
-    // Si la app se sirve desde el mismo servidor de Python, usa ruta relativa /api
-    // Si se abre desde Live Server u otro puerto, apunta a http://localhost:5000/api
-    BASE_URL: (window.location.port === "5000") 
-        ? "/api" 
-        : "http://localhost:5000/api"
+    // URL del backend:
+    // - En producción (Flask sirviendo este frontend) usa /api del mismo origen.
+    // - Al abrir los HTML directamente o con Live Server, apunta al backend local.
+    // - Se puede sobrescribir definiendo window.ECOSAFE_API_URL antes de cargar este script.
+    BASE_URL: (() => {
+        if (window.ECOSAFE_API_URL) {
+            return String(window.ECOSAFE_API_URL).replace(/\/$/, "");
+        }
+        const { protocol, hostname, port } = window.location;
+        const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
+        if (!window.ECOSAFE_API_URL && /\.netlify\.app$/.test(hostname)) {
+            console.error("[EcoSafe] Falta configurar window.ECOSAFE_API_URL en js/config.js con la URL del backend desplegado.");
+        }
+        if (protocol === "file:") return "http://localhost:5000/api";
+        if (isLocal && port && port !== "5000") return "http://localhost:5000/api";
+        return "/api";
+    })()
 };
 
 // Almacenamiento local seguro
@@ -67,7 +82,7 @@ async function apiFetch(endpoint, options = {}) {
             console.warn("Sesión expirada o token no autorizado. Redirigiendo a login...");
             AuthStorage.removeToken();
             if (!window.location.pathname.endsWith("index.html") && window.location.pathname !== "/") {
-                window.location.href = "/index.html";
+                window.location.href = APP_ROOT + "index.html";
             }
             return { error: "Sesión expirada", status: 401 };
         }
@@ -84,7 +99,7 @@ async function apiFetch(endpoint, options = {}) {
         return {
             ok: false,
             status: 0,
-            error: "No se pudo conectar con el servidor backend en Python (http://localhost:5000). Verifica que esté encendido."
+            error: "No se pudo conectar con el servidor (API). Verifica tu conexión o que el backend esté en línea."
         };
     }
 }

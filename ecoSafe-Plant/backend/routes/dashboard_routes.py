@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from database import fetch_one, fetch_all
+from utils.auth import login_required
 from datetime import datetime, date
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -7,6 +8,7 @@ dashboard_bp = Blueprint("dashboard", __name__)
 MONTH_NAMES_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
 
 @dashboard_bp.route("/dashboard/kpis", methods=["GET"])
+@login_required
 def get_dashboard_kpis():
     """
     Retorna los valores consolidados de los KPIs clave para las tarjetas principales.
@@ -140,6 +142,7 @@ def get_dashboard_kpis():
 
 
 @dashboard_bp.route("/dashboard/waste-chart", methods=["GET"])
+@login_required
 def get_waste_chart():
     """
     Retorna series mensuales de residuos para el año indicado agrupadas por categoría.
@@ -210,6 +213,7 @@ def get_waste_chart():
 
 
 @dashboard_bp.route("/dashboard/utilities-chart", methods=["GET"])
+@login_required
 def get_utilities_chart():
     """
     Retorna consumos mensuales de agua y energía eléctrica junto con sus metas para cada mes del año.
@@ -290,6 +294,7 @@ def get_utilities_chart():
 
 
 @dashboard_bp.route("/dashboard/safety-stats", methods=["GET"])
+@login_required
 def get_safety_stats():
     """
     Retorna métricas de SST para visualizaciones de dona y resumen ejecutivo.

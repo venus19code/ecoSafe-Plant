@@ -1,6 +1,24 @@
+import ssl
 import pymysql
 from pymysql.cursors import DictCursor
 from config import Config
+
+
+def get_ssl_context():
+    """
+    Devuelve un contexto SSL cuando DB_SSL está activo.
+    Necesario en proveedores de MySQL en la nube que exigen conexión cifrada.
+    Si se indica DB_SSL_CA (ruta al certificado), se valida el certificado del servidor.
+    """
+    if not Config.DB_SSL:
+        return None
+    if Config.DB_SSL_CA:
+        return ssl.create_default_context(cafile=Config.DB_SSL_CA)
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
+
 
 def get_db_connection(use_database=True):
     """
@@ -16,7 +34,8 @@ def get_db_connection(use_database=True):
             database=Config.DB_NAME if use_database else None,
             cursorclass=DictCursor,
             autocommit=True,
-            charset="utf8mb4"
+            charset="utf8mb4",
+            ssl=get_ssl_context()
         )
         return connection
     except pymysql.MySQLError as e:

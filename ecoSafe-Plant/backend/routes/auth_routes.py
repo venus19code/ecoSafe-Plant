@@ -108,13 +108,6 @@ def get_current_user_profile():
 
     return jsonify({"user": user}), 200
 
-@auth_bp.route("/users", methods=["GET"])
-@role_required("ADMIN", "SUPERVISOR")
-def list_users():
-    """Lista todos los usuarios del sistema (solo accesible por ADMIN y SUPERVISOR)."""
-    users = fetch_all("SELECT id, name, email, role, area, is_active, created_at FROM users ORDER BY name ASC")
-    return jsonify({"users": users}), 200
-
 @auth_bp.route("/health", methods=["GET"])
 def health_check():
     """Verifica el estado del servicio y la conexión a MySQL."""

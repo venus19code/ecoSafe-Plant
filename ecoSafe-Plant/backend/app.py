@@ -8,6 +8,7 @@ from routes.utility_routes import utility_bp
 from routes.sst_routes import sst_bp
 from routes.epp_routes import epp_bp
 from routes.dashboard_routes import dashboard_bp
+from routes.user_routes import user_bp
 
 # Rutas base
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +27,36 @@ app.register_blueprint(utility_bp, url_prefix="/api")
 app.register_blueprint(sst_bp, url_prefix="/api")
 app.register_blueprint(epp_bp, url_prefix="/api")
 app.register_blueprint(dashboard_bp, url_prefix="/api")
+app.register_blueprint(user_bp, url_prefix="/api")
+
+# ==========================================================
+# ENDPOINT DE SALUD (para plataformas de despliegue)
+# ==========================================================
+
+@app.route("/api/health")
+def health():
+    """Verificación rápida de que el servicio está en línea."""
+    return jsonify({"status": "ok", "service": "ecosafe-plant"})
+
+# ==========================================================
+# INICIALIZACIÓN AUTOMÁTICA DE BASE DE DATOS (NUBE)
+# ==========================================================
+
+def _needs_db_init():
+    """Indica si la base de datos aún no tiene usuarios (primera puesta en marcha)."""
+    from database import fetch_one
+    try:
+        row = fetch_one("SELECT COUNT(*) AS total FROM users")
+        return not row or row.get("total", 0) == 0
+    except Exception:
+        return True
+
+if Config.AUTO_INIT_DB and _needs_db_init():
+    try:
+        from init_db import run_init_db
+        run_init_db()
+    except Exception as e:
+        print(f"[Aviso] No se pudo inicializar la base de datos automáticamente: {e}")
 
 # ==========================================================
 # RUTAS PARA SERVIR EL FRONTEND (ARQUITECTURA MONOLITO)

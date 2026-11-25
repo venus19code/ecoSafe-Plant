@@ -1,0 +1,91 @@
+# ==========================================================
+# ECOSAFE PLANT - STACK LOCAL COMPLETO
+# ==========================================================
+#   db       -> MySQL 8 (datos persistidos en el volumen mysql_data)
+#   backend  -> Flask + Gunicorn (API + frontend en http://localhost:5000)
+#   adminer  -> Interfaz web para revisar la base de datos (http://localhost:8080)
+#
+# Uso rápido (desde esta carpeta):
+#   Copy-Item .env.example .env     # solo la primera vez
+#   docker compose up -d --build
+#   docker compose logs -f backend
+#   docker compose down             # conserva los datos
+#   docker compose down -v          # borra también la base de datos
+# ==========================================================
+
+name: ecosafe-plant
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: ecosafe-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${DB_NAME:-ecosafe_db}
+      MYSQL_USER: ${DB_USER:-ecosafe}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ecosafe123}
+      TZ: ${TZ:-America/Bogota}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      # 3307 en el host para no chocar con un MySQL/XAMPP local en 3306
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ecosafe-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 5000
+      DEBUG: "false"
+      SECRET_KEY: ${SECRET_KEY:-ecosafe_secret_jwt_key_super_segura_2026}
+      JWT_EXPIRATION_HOURS: ${JWT_EXPIRATION_HOURS:-24}
+      # Conexión interna: el host es el nombre del servicio "db"
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-ecosafe}
+      DB_PASSWORD: ${DB_PASSWORD:-ecosafe123}
+      DB_NAME: ${DB_NAME:-ecosafe_db}
+      DB_SSL: "false"
+      # Crea tablas + usuarios semilla + datos demo si la BD está vacía
+      AUTO_INIT_DB: ${AUTO_INIT_DB:-true}
+      TZ: ${TZ:-America/Bogota}
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/health').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  adminer:
+    image: adminer:4
+    container_name: ecosafe-adminer
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+
+volumes:
+  mysql_data:
+    name: ecosafe_mysql_data

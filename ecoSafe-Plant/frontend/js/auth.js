@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si ya tiene sesión activa y está en la pantalla de login, redirigir a dashboard
     if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
         if (AuthStorage.isAuthenticated()) {
-            window.location.href = "/pages/dashboard.html";
+            window.location.href = APP_ROOT + "pages/dashboard.html";
             return;
         }
         initLoginForm();
@@ -65,7 +65,7 @@ function initLoginForm() {
 
             showAlert("Inicio exitoso. Redirigiendo...", true, "alert-success");
             setTimeout(() => {
-                window.location.href = "/pages/dashboard.html";
+                window.location.href = APP_ROOT + "pages/dashboard.html";
             }, 500);
         } else {
             const errorMsg = (res.data && res.data.error) || res.error || "No se pudo iniciar sesión. Credenciales incorrectas.";
@@ -100,7 +100,7 @@ function fillDemo(email, password) {
  */
 function handleLogout() {
     AuthStorage.removeToken();
-    window.location.href = "/index.html";
+    window.location.href = APP_ROOT + "index.html";
 }
 
 /**
@@ -108,12 +108,24 @@ function handleLogout() {
  */
 function requireAuthPage() {
     if (!AuthStorage.isAuthenticated()) {
-        window.location.href = "/index.html";
+        window.location.href = APP_ROOT + "index.html";
         return null;
     }
     const user = AuthStorage.getUser();
     renderUserProfile(user);
+    applyRoleVisibility(user);
     return user;
+}
+
+/**
+ * Muestra u oculta los elementos marcados con [data-admin-only]
+ * según el rol del usuario autenticado.
+ */
+function applyRoleVisibility(user) {
+    const isAdmin = !!user && user.role === "ADMIN";
+    document.querySelectorAll("[data-admin-only]").forEach((el) => {
+        el.style.display = isAdmin ? "" : "none";
+    });
 }
 
 /**

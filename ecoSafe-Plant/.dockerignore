@@ -1,0 +1,20 @@
+# El contexto de build es la raíz del proyecto, pero la imagen
+# solo necesita backend/ y frontend/.
+docs/
+.git/
+.gitignore
+README
+render.yaml
+docker-compose.yml
+.env
+.env.*
+**/.env
+**/.env.*
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

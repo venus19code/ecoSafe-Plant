@@ -1225,3 +1225,69 @@ body {
         gap: 8px !important;
     }
 }
+
+/* ==========================================================
+   COMPONENTES PARA GESTIÓN DE USUARIOS (SPEC 007)
+   ========================================================== */
+
+.badge-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.badge-role-admin {
+    background-color: #ede9fe;
+    color: #5b21b6;
+    border: 1px solid #ddd6fe;
+}
+
+.badge-role-supervisor {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.badge-role-operario {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-role-self {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    margin-left: 0.4rem;
+    font-size: 0.65rem;
+}
+
+.status-activo {
+    background-color: #d1fae5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+.status-inactivo {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+}
+
+.data-table button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.alert-warning {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+

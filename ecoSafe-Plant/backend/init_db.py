@@ -1,7 +1,30 @@
 import os
 import pymysql
 from config import Config
+from database import get_ssl_context
 from utils.auth import hash_password
+
+
+def _split_sql(sql):
+    """
+    Divide un script SQL en sentencias y descarta las líneas de comentario (--).
+    Así se pueden detectar correctamente sentencias como CREATE DATABASE o USE
+    aunque vengan precedidas de comentarios.
+    """
+    statements = []
+    for raw in sql.split(";"):
+        lines = [line for line in raw.splitlines() if not line.strip().startswith("--")]
+        stmt = "\n".join(lines).strip()
+        if stmt:
+            statements.append(stmt)
+    return statements
+
+
+def _is_database_statement(stmt):
+    """True para sentencias que crean/seleccionan la base (ya la crea/usa la conexión)."""
+    head = stmt.lstrip().upper()
+    return head.startswith("CREATE DATABASE") or head.startswith("USE ")
+
 
 def run_init_db():
     print("=" * 60)
@@ -11,18 +34,24 @@ def run_init_db():
 
     try:
         # 1. Conectar sin base de datos para crearla si no existe
-        conn = pymysql.connect(
-            host=Config.DB_HOST,
-            port=Config.DB_PORT,
-            user=Config.DB_USER,
-            password=Config.DB_PASSWORD,
-            charset="utf8mb4",
-            autocommit=True
-        )
-        with conn.cursor() as cursor:
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{Config.DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
-            print(f"[OK] Base de datos '{Config.DB_NAME}' verificada/creada exitosamente.")
-        conn.close()
+        #    (en proveedores en la nube la base ya viene creada y el usuario puede no tener permiso de CREATE DATABASE)
+        try:
+            conn = pymysql.connect(
+                host=Config.DB_HOST,
+                port=Config.DB_PORT,
+                user=Config.DB_USER,
+                password=Config.DB_PASSWORD,
+                charset="utf8mb4",
+                autocommit=True,
+                ssl=get_ssl_context()
+            )
+            with conn.cursor() as cursor:
+                cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{Config.DB_NAME}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+                print(f"[OK] Base de datos '{Config.DB_NAME}' verificada/creada exitosamente.")
+            conn.close()
+        except pymysql.MySQLError as db_error:
+            print(f"[Aviso] No se pudo crear/verificar la base de datos '{Config.DB_NAME}': {db_error}")
+            print("        Se asumirá que ya existe en el proveedor de MySQL.")
 
         # 2. Conectar a la base de datos ecoSafe_db para ejecutar schema
         conn = pymysql.connect(
@@ -32,7 +61,8 @@ def run_init_db():
             password=Config.DB_PASSWORD,
             database=Config.DB_NAME,
             charset="utf8mb4",
-            autocommit=True
+            autocommit=True,
+            ssl=get_ssl_context()
         )
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,9 +74,8 @@ def run_init_db():
 
         # Ejecutar sentencias del schema (separadas por ;)
         with conn.cursor() as cursor:
-            statements = [stmt.strip() for stmt in schema_sql.split(";") if stmt.strip()]
-            for stmt in statements:
-                if not stmt.upper().startswith("CREATE DATABASE") and not stmt.upper().startswith("USE"):
+            for stmt in _split_sql(schema_sql):
+                if not _is_database_statement(stmt):
                     cursor.execute(stmt)
             print("[OK] Tablas 'users' y 'audit_logs' creadas o verificadas correctamente.")
 
@@ -91,13 +120,14 @@ def run_init_db():
             with open(seed_path, "r", encoding="utf-8") as f:
                 seed_sql = f.read()
             with conn.cursor() as cursor:
-                seed_statements = [s.strip() for s in seed_sql.split(";") if s.strip()]
+                seed_statements = _split_sql(seed_sql)
                 for s in seed_statements:
-                    if not s.upper().startswith("USE") and not s.upper().startswith("CREATE DATABASE"):
-                        try:
-                            cursor.execute(s)
-                        except Exception as ex:
-                            print(f"  [Aviso al ejecutar semilla] {ex}")
+                    if _is_database_statement(s):
+                        continue
+                    try:
+                        cursor.execute(s)
+                    except Exception as ex:
+                        print(f"  [Aviso al ejecutar semilla] {ex}")
             print("[OK] Datos semilla de Spec 002 (categorías, tipos y registros de residuos) aplicados.")
 
         conn.close()

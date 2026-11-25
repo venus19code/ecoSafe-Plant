@@ -176,7 +176,7 @@ En la parte superior del módulo aparecerá un **banner de alerta** cuando haya 
 
 ---
 
-## 8. Gestión de Usuarios *(Solo ADMIN)*
+## 8. Gestión de Usuarios y Roles *(Solo ADMIN — Spec 007)*
 
 **Ruta en el menú:** 👤 *Usuarios*
 

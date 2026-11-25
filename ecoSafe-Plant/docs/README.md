@@ -39,3 +39,8 @@ Sistema de gestión ambiental y seguridad laboral (SST) para plantas de producci
   - [plan.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/dashboard%20006/plan.md)
   - [spec.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/dashboard%20006/spec.md) (o [spec-dashboard-indicadores-reportes.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/dashboard%20006/spec-dashboard-indicadores-reportes.md))
   - [tasks.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/dashboard%20006/tasks.md)
+
+- **[usuarios 007](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/usuarios%20007/)** - *Gestión de Usuarios y Roles*
+  - [plan.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/usuarios%20007/plan.md)
+  - [spec.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/usuarios%20007/spec.md)
+  - [tasks.md](file:///c:/Users/joenu/OneDrive/Documentos/Trabajo_Dani/pagina_web/docs/usuarios%20007/tasks.md)
